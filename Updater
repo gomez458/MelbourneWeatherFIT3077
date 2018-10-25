@@ -1,0 +1,44 @@
+package weatherTextFrMW;
+
+import java.util.HashSet;
+import java.util.*;
+
+public class Updater implements Subject {
+
+	HashSet<Observer> Observers = new HashSet<Observer>();
+	
+	
+	public void attach(Observer o) {
+		
+		Observers.add(o);
+	}
+	
+	public void detach(Observer o) {
+		
+		Observers.remove(o);
+	}
+	
+	
+	
+	/* 
+	 * Notify All Locations.
+	 */
+	public void notifyObservers() {
+		Console.clearPan();
+		for (Observer o : Observers) {
+			 boolean update = SettingSingleton.getInstance().getLocSetting().contains((((Monitor) o).getNam()))? true:false; 
+			 
+			 if (update ==true){
+			
+			o.update();
+			Console.rePan();
+			}}
+		
+		
+		
+	
+}
+	public void settingChanged(){
+		notifyObservers();
+	}	}
+

@@ -1,0 +1,47 @@
+package weatherTextFrMW;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+
+public class Temperature implements WeatherMonitor {
+
+	private String name; 
+	private WeatherService service; 
+	private JLabel j = new JLabel();
+	
+
+ private String temperature;
+
+
+public Temperature(String n, WeatherService w) {
+	this.name= n; 
+	this.service=w; 
+	this.j = new JLabel();
+}
+
+public void update(){
+	if(SettingSingleton.getInstance().getTempSetting()){
+		
+		this.temperature = service.getTemperature(name); 
+		
+		
+		
+}
+}
+
+public String getTemperature(){
+
+	return this.temperature;
+}
+
+public void display(){
+	  if (SettingSingleton.getInstance().getTempSetting()== true){
+		j.setText("\n\tTemperature:\t" + this.getTemperature());
+		j.setSize(400,30);
+		Console.addComp((JComponent)j);
+	}
+}
+
+}
+
+

@@ -1,0 +1,230 @@
+package weatherTextFrMW;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.swing.*;
+
+
+
+
+
+public class UI{
+	
+	private String[] locations ;
+	
+public UI() { 
+	
+	} 
+
+// Create UI 
+public void createInterface() throws Exception{
+	final JFrame frame = new JFrame("Weather Monitor"); 
+	frame.setSize(800, 600);
+	frame.setLayout(null);
+	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setLayout(null);
+	frame.getContentPane().setForeground(Color.orange );
+	frame.getContentPane().setBackground(Color.WHITE);
+	
+	frame.setResizable(false);
+	
+
+
+	// Jpanel 
+	JPanel lpan = new  JPanel();
+	lpan.setLayout(new BoxLayout(lpan, BoxLayout.PAGE_AXIS));
+	lpan.setBackground(Color.WHITE);
+	lpan.setBorder(BorderFactory.createRaisedBevelBorder());
+	// Jpanel 
+		JPanel rpan = new  JPanel();
+		rpan.setLayout(new BoxLayout(rpan, BoxLayout.PAGE_AXIS));
+		rpan.setBackground(Color.WHITE);
+		rpan.setBorder(BorderFactory.createRaisedBevelBorder());
+		
+
+		// Text Area that immitates console 
+		
+		rpan.add(Console.getConsole());
+	
+
+		
+		//Title Label
+		JLabel lblTitle = new JLabel("Melbourne Weather 2" );
+		lblTitle.setFont(new Font("Tahoma", Font.ITALIC, 24));
+		lblTitle.setSize(300, 30);
+		lblTitle.setForeground(Color.BLUE);
+		lblTitle.setLocation(10, 10);
+		
+		frame.add(lblTitle);
+	//Left Scroll Pane 
+	JScrollPane scInfo = new JScrollPane(lpan);
+	scInfo.setBackground(Color.WHITE);
+	
+
+	scInfo.setSize( 350, 450);
+	scInfo.setLocation(15,50);
+	
+   
+	scInfo.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+	
+	//RIGHT Scroll Pane 
+	JScrollPane scLocations = new JScrollPane(rpan);
+	scLocations.setLocation(395 ,75);
+	scLocations.setSize(350, 425); 
+	scLocations.setBackground(Color.WHITE);
+	scLocations.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+	scLocations.setAlignmentX(Component.LEFT_ALIGNMENT);
+	
+	
+			
+	//Select Setting Label
+	JLabel lblSet = new JLabel( "Select Settings			");
+	lblSet.setFont(new Font("Tahoma", Font.PLAIN, 16));
+	lblSet.setSize(350, 100);
+	//lblSet.setBorder(BorderFactory.createLineBorder(Color.red));	
+	//Weather Label 
+	JLabel lblWeather = new JLabel( "Weather:");
+	lblWeather.setFont(new Font("Tahoma", Font.PLAIN, 16));
+	lblWeather.setSize(150, 30);
+	lblWeather.setLocation(395, 45);
+	
+	
+	//Select Location  Label 
+		JLabel lblSelLocation = new JLabel( "Select Locations:			");
+		lblSelLocation.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblSelLocation.setSize(350, 100);
+		//lblSelLocation.setBorder(BorderFactory.createLineBorder(Color.red));
+	
+	//Check Box 
+	
+    final JCheckBox cbTemp = new JCheckBox("Tempreture"); 
+    cbTemp.setBackground(Color.WHITE);
+    //cbTemp.setSize(150, 100);
+    
+    final JCheckBox cbRainfall = new JCheckBox("Rainfall");
+    cbRainfall.setBackground(Color.WHITE);
+    //cbRainfall.setSize(100, 100);
+    
+ // Add to scPane 
+ 	lpan.add(lblSet);
+ 	lpan.add(cbTemp);
+ 	lpan.add(cbRainfall); 
+ 	lpan.add(lblSelLocation);
+
+
+ 
+// List of JCheckerBoxes 
+ 
+    final ArrayList<JCheckBox> loc = new ArrayList<JCheckBox>(); 
+    
+    // Create all checkboxes using the list of location provided by the WSDL
+	for (int i = 0; i < locations.length; i++){
+		JCheckBox cbN = new JCheckBox(locations[i]);
+        cbN.setBackground(Color.WHITE);
+		loc.add(cbN);
+		lpan.add(cbN);
+		
+	}
+		
+	 final Subject update = new Updater() ;
+	 
+	 
+	//Create Location + add weather monitors + attach observers  
+	 for( int i =0 ; i<locations.length; i++){
+		 ArrayList<WeatherMonitor> weatherMonitors = new ArrayList<WeatherMonitor>();
+		 WeatherService service = new MellbourneWeatherService2();
+		 weatherMonitors.add( new Time(locations[i], service) ); 
+         weatherMonitors.add(new Temperature(locations[i], service));
+				 weatherMonitors.add( new Rainfall(locations[i],service));
+		 Observer o = new Monitor( locations[i], weatherMonitors);
+		 update.attach(o); 
+		 
+	 }
+	 
+ // View buttons must be clicked to process settings    
+    JButton view = new JButton( "View");
+	view.setSize(100, 40);
+	view.setLocation(255,510);
+	view.addActionListener(new ActionListener() {
+        
+
+		public void actionPerformed(ActionEvent e) {
+	
+		
+		  ArrayList<String> selcd = new ArrayList<String>();
+			for (int a = 0; a <loc.size(); a++){
+				if (loc.get(a).isSelected()){
+					selcd.add(loc.get(a).getLabel());
+				}	
+				
+			}
+			
+			// Update view setting chosen by user 
+
+			 SettingSingleton s = SettingSingleton.getInstance();
+
+			 s.setRainSetting(cbRainfall.isSelected());
+		     s.setTempSetting(cbTemp.isSelected()); 
+		     s.setLocSetting(selcd);
+		     
+		     if((s.getRainSetting() || s.getTempSetting()) && !(selcd.isEmpty())){
+		    	
+		    	 System.out.println("First Update View");
+		 		
+		     
+		     update.notifyObservers();
+		   
+		     }
+		     else {
+		    	 JOptionPane.showMessageDialog(frame, 
+							"Please select a location to view and a weather settings");
+		     
+		}
+		}	 
+		     
+		
+		});
+	
+	
+    
+	
+	
+	//Add components to Frame 
+	frame.add(view);
+	frame.add(scInfo);
+	frame.add(scLocations); 
+	frame.add(lblWeather);
+	
+	frame.setVisible(true);
+	
+	
+	 
+	// Timer used to update every 5 minutes
+		 
+		 System.out.println("Updated1");
+		 Timer t = new Timer();
+			t.schedule(new TimerTask() {
+			    @Override
+			    public void run() {
+			    	if( SettingSingleton.getInstance().getLocSetting() != null){
+			    	System.out.println("Updated"); 
+			     update.notifyObservers();}
+			    }
+			}, 0,300000);
+		 
+}
+/// Set location list that is used to populate the CheckBox Labels 
+
+public void setLocationsList(String[] l){
+	this.locations =l ; 
+}
+
+
+}
+
+

@@ -1,0 +1,45 @@
+package weatherTextFrMW;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class Rainfall implements WeatherMonitor {
+	
+	private String name;
+	private WeatherService service ; 
+private JLabel lblRainfall ;
+
+	
+	private String rainfall; 
+public Rainfall(String name, WeatherService w) {
+ this.name = name; 
+ this.service =w; 
+ this.lblRainfall = new JLabel();
+}
+	public String getRainfall() {
+	      return rainfall;
+	   }
+	   
+	   public void update() {
+		   if(SettingSingleton.getInstance().getRainSetting()== true){ // The singleton is used to prevent addition network traffic 
+			   this.rainfall =service.getRainfall(this.name); 
+			  
+		   }
+	   }
+	     
+	   // Called to display output in the JTextArea 
+	       public void display(){
+	    	if (SettingSingleton.getInstance().getRainSetting()== true){
+	    	
+	    	lblRainfall.setText( "\n\tRainfall:\t" + this.getRainfall());
+	       lblRainfall.setSize(400, 30);
+	    	
+	    	
+	    	Console.addComp((JComponent) lblRainfall); // any jcomponent can be added to the jpanel
+ }
+	    		
+
+	    	
+	    	}
+	   }

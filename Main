@@ -1,0 +1,28 @@
+package weatherTextFrMW;
+
+import org.apache.axis2.AxisFault;
+
+public class Main {
+	
+
+	public static void main(String[] args) throws AxisFault  {
+	
+		
+// Call in locations from service 	
+	WeatherService w = new MellbourneWeatherService2(); 
+			String[] locations = w.getLocations();
+		
+
+	//Create User Interface 		
+UI userInterface = new UI();
+
+ userInterface.setLocationsList(locations); 
+ try {
+		userInterface.createInterface();
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+ 
+	}
+}

@@ -1,0 +1,45 @@
+package weatherTextFrMW;
+
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+
+import org.apache.axis2.AxisFault;
+
+public class Time implements WeatherMonitor {
+private String timestamp ; 
+private JLabel lblTime;
+
+private String name;
+private WeatherService service; 
+
+
+
+public Time(String name, WeatherService w) throws AxisFault{
+this.name = name;
+this.service =w; 
+this.lblTime= new JLabel();
+
+}
+public String getTime() {
+	
+      return this.timestamp;
+   }
+   
+   public void update() {
+	 
+	this.timestamp = (this.service).getTime(this.name); 
+	  
+	   
+   
+}
+     
+   // Called to display output in the JTextArea
+      
+       public  void display(){
+    	
+    	lblTime.setText( ("@ Time:" + getTime()));
+    	lblTime.setSize(400, 30);
+    	Console.addComp((JComponent) lblTime);
+       }
+}

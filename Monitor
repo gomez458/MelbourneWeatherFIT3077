@@ -1,0 +1,67 @@
+package weatherTextFrMW;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.util.ArrayList;
+
+import javax.swing.JLabel;
+public class Monitor implements Observer{
+private String name; 
+private ArrayList<WeatherMonitor> weatherMonitors;
+
+
+public Monitor(String name, ArrayList<WeatherMonitor>  w){
+	this.name = name; 
+	this.weatherMonitors = w; 
+	
+}
+
+public String getNam(){
+	return this.name; 
+}
+public void setName( String name){
+	this.name = name ;} 
+	
+	public  ArrayList<WeatherMonitor> getWeatherMonitor(){
+		return this.weatherMonitors;
+	}
+	public void setWeatherMonitor( ArrayList<WeatherMonitor> w){
+		this.weatherMonitors = w; }
+		
+ public void update(){
+	
+	
+	 boolean update = SettingSingleton.getInstance().getLocSetting().contains(name)? true:false; 
+	 
+	 if (update ==true){
+		 
+	 for ( int i =0 ; i< weatherMonitors.size(); i++){
+		( weatherMonitors.get(i)).update(); }
+	 
+		 
+		 
+	 display(); 
+}
+	 
+ }
+	 
+	 public void display(){
+		 
+		 JLabel lblTitle = new JLabel("Monitor Location:" + this.name); 
+			lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lblTitle.setSize(400, 70);
+			lblTitle.setForeground(Color.BLUE);
+		 Console.addComp(lblTitle);
+			
+		System.out.println( "Location: " + this.name); 
+		
+		 for ( int i =0 ; i< weatherMonitors.size(); i++){
+		
+			weatherMonitors.get(i).display(); 
+			 
+	 }
+		
+ 
+ 
+ }
+}
